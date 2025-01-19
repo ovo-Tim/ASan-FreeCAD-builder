@@ -1,0 +1,81 @@
+# Modified from https://github.com/FreeCAD/FreeCAD/blob/main/.github/workflows/sub_buildUbuntu2004.yml
+
+name: Build on Ubuntu 20.04
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        type: string
+
+jobs:
+
+  Build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Install FreeCAD dependencies
+        run: |
+          sudo add-apt-repository ppa:freecad-maintainers/freecad-daily
+          sudo apt-get update
+          sudo apt build-dep freecad-daily
+
+      - name: Clone FreeCAD source
+        run: |
+          git clone https://github.com/FreeCAD/FreeCAD.git --depth=1 freecad-source
+          cd freecad-source
+          git submodule update --init
+
+      - name: Enable ASan
+        run: |
+          cd freecad-source
+          sed -i '40i\
+          set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fsanitize=leak")\
+          set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -fsanitize=leak")\
+          \
+          set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address -fsanitize=leak")\
+          set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=address -fsanitize=leak")\
+          set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -fsanitize=address -fsanitize=leak")\
+          ' CMakeLists.txt
+
+      - name: build
+        run: |
+          cd freecad-source
+          mkdir build
+          cd build
+          cmake ../
+          make -j$(nproc)
+
+      - name: Package FreeCAD
+        run: |
+          cd freecad-source/build
+          mkdir -p FreeCAD
+          cp -r include bin Mod Ext Lib FreeCAD/
+          tar -czvf FreeCAD.tar.gz FreeCAD
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          release_name: ${{ github.event.inputs.version }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: freecad-source/build/FreeCAD.tar.gz
+          asset_name: FreeCAD.tar.gz
+          asset_content_type: application/gzip
+
+
+
