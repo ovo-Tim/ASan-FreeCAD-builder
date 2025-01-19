@@ -21,6 +21,9 @@ jobs:
     steps:
       - name: Install FreeCAD dependencies
         run: |
+          sudo cp /etc/apt/sources.list /etc/apt/sources.list~
+          sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
+          sudo apt-get update
           sudo add-apt-repository ppa:freecad-maintainers/freecad-daily
           sudo apt-get update
           sudo apt build-dep freecad-daily
