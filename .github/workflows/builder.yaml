@@ -21,10 +21,17 @@ jobs:
     steps:
       - name: Install FreeCAD dependencies
         run: |
-          echo "Types: deb-src" | sudo tee -a /etc/apt/sources.list.d/ubuntu.sources
-          echo "URIs: http://archive.ubuntu.com/ubuntu/" | sudo tee -a /etc/apt/sources.list.d/ubuntu.sources
-          echo "Suites: $(lsb_release -cs) main restricted universe multiverse" | sudo tee -a /etc/apt/sources.list.d/ubuntu.sources
-          echo "Components: " | sudo tee -a /etc/apt/sources.list.d/ubuntu.sources
+          sudo tee /etc/apt/sources.list.d/ubuntu.sources <<EOF
+          Types: deb
+          URIs: http://archive.ubuntu.com/ubuntu/
+          Suites: $(lsb_release -cs)
+          Components: main restricted universe multiverse
+
+          Types: deb-src
+          URIs: http://archive.ubuntu.com/ubuntu/
+          Suites: $(lsb_release -cs)
+          Components: main restricted universe multiverse
+          EOF
           cat /etc/apt/sources.list.d/ubuntu.sources
           sudo apt-get update
           sudo add-apt-repository ppa:freecad-maintainers/freecad-daily
