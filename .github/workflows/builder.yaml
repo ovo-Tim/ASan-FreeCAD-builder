@@ -56,7 +56,12 @@ jobs:
                     ninja \
                     nlohmann-json \
                     shiboken6 \
-                    swig
+                    swig \
+                    gcc \
+                    gcc-libs \
+                    base-devel \
+                    tar \
+                    clang
 
       - name: Clone FreeCAD source
         run: |
