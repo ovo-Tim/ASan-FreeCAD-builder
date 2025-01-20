@@ -61,7 +61,8 @@ jobs:
                     gcc-libs \
                     base-devel \
                     tar \
-                    clang
+                    clang \
+                    libxcursor
 
       - name: Clone FreeCAD source
         run: |
