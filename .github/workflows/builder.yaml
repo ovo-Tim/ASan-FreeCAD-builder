@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Install FreeCAD dependencies
         run: |
-          sudo pacman -S boost-libs
+          pacman -S boost-libs
                     coin
                     fmt
                     glew
