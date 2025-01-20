@@ -24,38 +24,38 @@ jobs:
       - name: Install FreeCAD dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm boost-libs
-                    coin
-                    fmt
-                    glew
-                    jsoncpp
-                    med
-                    netcdf
-                    opencascade
-                    openmpi
-                    pyside6
-                    pyside6-tools
-                    python-yaml
-                    python-matplotlib
-                    python-packaging
-                    python-pivy
-                    python-ply
-                    qt6-svg
-                    qt6-tools
-                    qt6-base
-                    qt6-5compat
-                    shared-mime-info
-                    vtk
-                    verdict
-                    xerces-c
-                    yaml-cpp
-                    boost
-                    cmake
-                    eigen
-                    git
-                    ninja
-                    nlohmann-json
-                    shiboken6
+          pacman -S --noconfirm boost-libs \
+                    coin \
+                    fmt \
+                    glew \
+                    jsoncpp \
+                    med \
+                    netcdf \
+                    opencascade \
+                    openmpi \
+                    pyside6 \
+                    pyside6-tools \
+                    python-yaml \
+                    python-matplotlib \
+                    python-packaging \
+                    python-pivy \
+                    python-ply \
+                    qt6-svg \
+                    qt6-tools \
+                    qt6-base \
+                    qt6-5compat \
+                    shared-mime-info \
+                    vtk \
+                    verdict \
+                    xerces-c \
+                    yaml-cpp \
+                    boost \
+                    cmake \
+                    eigen \
+                    git \
+                    ninja \
+                    nlohmann-json \
+                    shiboken6 \
                     swig
 
       - name: Clone FreeCAD source
