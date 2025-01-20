@@ -13,7 +13,9 @@ on:
 jobs:
 
   Build:
-    runs-on: archlinux/archlinux:latest
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
     defaults:
       run:
         shell: bash
