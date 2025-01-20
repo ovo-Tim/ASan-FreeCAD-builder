@@ -109,10 +109,7 @@ jobs:
 
       - name: Package FreeCAD
         run: |
-          cd freecad-source/build
-          mkdir -p FreeCAD
-          cp -r include bin Mod Ext Lib FreeCAD/
-          tar -czvf FreeCAD.tar.gz FreeCAD
+          tar -czvf FreeCAD.tar.gz freecad-source
 
       - name: Create Release
         id: create_release
@@ -129,7 +126,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: freecad-source/build/FreeCAD.tar.gz
+          asset_path: FreeCAD.tar.gz
           asset_name: FreeCAD.tar.gz
           asset_content_type: application/gzip
 
