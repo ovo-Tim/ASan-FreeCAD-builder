@@ -1,0 +1,112 @@
+# Modified from https://github.com/FreeCAD/FreeCAD/blob/main/.github/workflows/sub_buildUbuntu2004.yml
+
+name: Build on Arch Linux with gperftools
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        type: string
+
+jobs:
+
+  Build:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Install FreeCAD dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm boost-libs \
+                    coin \
+                    fmt \
+                    glew \
+                    jsoncpp \
+                    med \
+                    netcdf \
+                    opencascade \
+                    openmpi \
+                    pyside6 \
+                    pyside6-tools \
+                    python-yaml \
+                    python-matplotlib \
+                    python-packaging \
+                    python-pivy \
+                    python-ply \
+                    qt6-svg \
+                    qt6-tools \
+                    qt6-base \
+                    qt6-5compat \
+                    shared-mime-info \
+                    vtk \
+                    verdict \
+                    xerces-c \
+                    yaml-cpp \
+                    boost \
+                    cmake \
+                    eigen \
+                    git \
+                    ninja \
+                    nlohmann-json \
+                    shiboken6 \
+                    swig \
+                    gcc \
+                    gcc-libs \
+                    base-devel \
+                    tar \
+                    clang \
+                    libxcursor \
+                    gperftools
+
+      - name: Clone FreeCAD source
+        run: |
+          git clone https://github.com/FreeCAD/FreeCAD.git --depth=1 freecad-source
+          cd freecad-source
+          git submodule update --init
+
+      - name: Enable gperftools
+        run: |
+          cd freecad-source
+          sed -i '/CompilerChecksAndSetups()/a set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer")\nset(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lprofiler")' CMakeLists.txt
+
+      - name: build
+        run: |
+          cd freecad-source
+          mkdir build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ../
+          make -j$(nproc)
+
+      - name: Package FreeCAD
+        run: |
+          tar -czvf FreeCAD.tar.gz freecad-source
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          release_name: ${{ github.event.inputs.version }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+            upload_url: ${{ steps.create_release.outputs.upload_url }}
+            asset_path: FreeCAD.tar.gz
+            asset_name: FreeCAD.tar.gz
+            asset_content_type: application/gzip
+
+
