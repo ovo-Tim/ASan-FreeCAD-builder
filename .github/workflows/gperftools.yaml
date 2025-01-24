@@ -87,7 +87,6 @@ jobs:
 
       - name: Package FreeCAD
         run: |
-          # tar -czvf FreeCAD.tar.gz freecad-source
           7z a -t7z -mx=9 -mmt=on -ms=on FreeCAD.7z freecad-source
 
       - name: Create Release
@@ -107,8 +106,8 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
-            asset_path: FreeCAD.tar.gz
-            asset_name: FreeCAD.tar.gz
+            asset_path: FreeCAD.7z
+            asset_name: FreeCAD.7z
             asset_content_type: application/gzip
 
 
