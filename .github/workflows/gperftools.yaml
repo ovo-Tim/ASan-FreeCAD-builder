@@ -63,7 +63,8 @@ jobs:
                     tar \
                     clang \
                     libxcursor \
-                    gperftools
+                    gperftools \
+                    p7zip
 
       - name: Clone FreeCAD source
         run: |
@@ -86,7 +87,8 @@ jobs:
 
       - name: Package FreeCAD
         run: |
-          tar -czvf FreeCAD.tar.gz freecad-source
+          # tar -czvf FreeCAD.tar.gz freecad-source
+          7z a -t7z -mx=9 -mmt=on -ms=on FreeCAD.tar.gz freecad-source
 
       - name: Create Release
         id: create_release
